@@ -5,7 +5,6 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
-import zendesk.commonui.UiConfig;
 import zendesk.core.Zendesk;
 import zendesk.core.Identity;
 import zendesk.core.JwtIdentity;
@@ -69,18 +68,17 @@ public class RNZendeskBridge extends ReactContextBaseJavaModule {
     @ReactMethod
     public void showHelpCenter(ReadableMap options) {
 //        Boolean hideContact = options.getBoolean("hideContactUs") || false;
-        UiConfig hcConfig = HelpCenterActivity.builder()
-                .withContactUsButtonVisible(!(options.hasKey("hideContactSupport") && options.getBoolean("hideContactSupport")))
-                .config();
 
         Intent intent = HelpCenterActivity.builder()
                 .withContactUsButtonVisible(true)
-                .intent(getReactApplicationContext(), hcConfig);
+                .intent(getReactApplicationContext(), HelpCenterActivity.builder()
+                                                                      .withContactUsButtonVisible(!(options.hasKey("hideContactSupport") && options.getBoolean("hideContactSupport")))
+                                                                      .config());
 
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         getReactApplicationContext().startActivity(intent);
     }
-    
+
     @ReactMethod
     public void showNewTicket(ReadableMap options) {
         ArrayList tags = options.getArray("tags").toArrayList();
@@ -95,10 +93,7 @@ public class RNZendeskBridge extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void showTicketList() {
-        Intent intent = RequestListActivity.builder()
-                .intent(getReactApplicationContext());
-
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        getReactApplicationContext().startActivity(intent);
+        RequestListActivity.builder()
+            .show(getReactApplicationContext());
     }
 }
